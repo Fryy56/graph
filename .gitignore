@@ -1,0 +1,22 @@
+# Executables
+*
+!*/
+!*.*
+*.exe
+bin/
+
+# Code::Blocks
+obj/
+*.layout
+*.depend
+*.cbp
+
+# ILY vscode
+.vscode/
+*.code-workspace
+
+# CMake
+build/
+
+# Local files
+output.txt
