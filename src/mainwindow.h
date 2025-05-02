@@ -4,6 +4,7 @@
 #include <QPushButton>
 #include <QLayout>
 #include <QLineEdit>
+#include <QLabel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -23,9 +24,12 @@ private:
 
 	QHBoxLayout* m_mainLayout;
 	QVBoxLayout* m_graphLayout;
+	QVBoxLayout* m_functionLayout;
+	QHBoxLayout* m_functionLabelLayout;
 	QVBoxLayout* m_buttonLayout;
 
 	QWidget* m_graph;
-	QLineEdit* m_function;
+	QLabel* m_functionLabel;
+	QLineEdit* m_functionField;
 private slots:
 };
