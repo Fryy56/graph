@@ -1,17 +1,15 @@
 #include "mainwindow.h"
+#include <QGraphicsColorizeEffect>
+#include <QPropertyAnimation>
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
-	// Colors
-	auto ColorBG = QColor(25, 25, 25);
-	auto ColorFields = QColor(45, 45, 45);
-
 	// Main window init
 	this -> setWindowTitle("Graph");
 	this -> setGeometry(0, 0, 800, 600);
 
 	// Palette setup
 	auto pal = QPalette();
-	pal.setColor(QPalette::Window, ColorBG);
+	pal.setColor(QPalette::Window, Colors.BG);
 
 	// Central widget
 	m_centralWidget = new QWidget(this);
@@ -32,7 +30,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	m_graph = new QWidget;
 	m_graph -> setMinimumSize(150, 100);
 	m_graph -> setAutoFillBackground(true);
-	pal.setColor(QPalette::Window, ColorFields);
+	pal.setColor(QPalette::Window, Colors.Fields);
 	m_graph -> setPalette(pal);
 	m_graphLayout -> addWidget(m_graph);
 
@@ -56,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	m_functionField -> setMaxLength(255);
 	m_functionField -> setPlaceholderText("sin(x)");
 	m_functionField -> setToolTip("Enter a function relative to x.");
-	pal.setColor(QPalette::Base, ColorFields);
+	pal.setColor(QPalette::Base, Colors.Fields);
 	pal.setColor(QPalette::Text, Qt::white);
 	m_functionField -> setPalette(pal);
 	m_functionLayout -> addWidget(m_functionField);
@@ -78,4 +76,14 @@ MainWindow::~MainWindow() {
 	delete m_mainLayout;
 
 	delete m_centralWidget;
+}
+
+void MainWindow::onFuncFieldSelect() {
+	QGraphicsColorizeEffect tint;
+	m_functionLabel -> setGraphicsEffect(&tint);
+	QPropertyAnimation anim(m_functionLabel, );
+	anim.setDuration(400);
+	anim.setStartValue()
+
+	return;
 }

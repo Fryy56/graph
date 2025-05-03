@@ -20,6 +20,11 @@ public:
 	~MainWindow();
 
 private:
+	struct {
+		QColor BG = QColor(25, 25, 25);
+		QColor Fields = QColor(45, 45, 45);
+	} Colors;
+
 	QWidget* m_centralWidget;
 
 	QHBoxLayout* m_mainLayout;
@@ -31,5 +36,8 @@ private:
 	QWidget* m_graph;
 	QLabel* m_functionLabel;
 	QLineEdit* m_functionField;
+
 private slots:
+	void onFuncFieldSelect();
+	void onFuncFieldDeselect();
 };
