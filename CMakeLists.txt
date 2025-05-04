@@ -11,7 +11,8 @@ qt_standard_project_setup()
 qt_add_executable(graph
         src/main.cpp
         src/mainwindow.cpp
-        src/mainwindow.h
+        src/tintinglabel.cpp
+        src/highlightedlineedit.cpp
 )
 target_link_libraries(graph PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
