@@ -5,7 +5,8 @@
 decltype(MainWindow::Colors) const MainWindow::Colors = {
 	{25, 25, 25}, // BG
 	{45, 45, 45}, // Fields
-	{195, 195, 195} // ButtonText
+	{175, 175, 175}, // ButtonText
+	{105, 20, 195} // GraphLine
 };
 
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
@@ -14,13 +15,28 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	this -> setGeometry(0, 0, 1000, 600);
 
 	// Colors setup
-	HighlightedLineEdit::setColors(Qt::darkGray, Qt::white, QColor(Colors.Fields), Qt::white);
+	HighlightedLineEdit::setColors(Qt::darkGray, Qt::white, Colors.Fields, Qt::white);
 	auto pal = QPalette();
 	pal.setColor(QPalette::Window, Colors.BG);
 
-	// Extra fields' setup
-	QRegularExpression intRegEx("(^-??[1-9]\\d{0,9}$)|(0)");
+	// Extra setup
+	QRegularExpression intRegEx("^(-??[1-9]\\d{0,9})|(0)$");
 	m_intRegExVal = new QRegularExpressionValidator(intRegEx);
+	auto pushButtonStyleSheet = QString("QPushButton {"
+			"background-color: rgb(%1, %2, %3);"
+			"border: 1px solid rgb(60, 60, 60);"
+			"border-radius: 5px"
+		"}"
+		"QPushButton:hover {"
+			"background-color: rgb(%4, %5, %6);"
+			"border-color: rgb(80, 80, 80);"
+			"color: rgb(255, 255, 255)"
+		"}"
+		"QPushButton:pressed {"
+			"border-color: rgb(60, 60, 60)"
+		"}"
+	).arg(Colors.BG.red()).arg(Colors.BG.green()).arg(Colors.BG.blue())
+	.arg(Colors.Fields.red()).arg(Colors.Fields.green()).arg(Colors.Fields.blue());
 
 	// Central widget
 	m_centralWidget = new QWidget(this);
@@ -39,10 +55,12 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	// ------------------------------ Graph layout ------------------------------
 	// Graph
 	m_graph = new QWidget;
+	m_graph -> setStyleSheet(QString(
+			"border-radius: 20px;"
+			"background-color: rgb(%1, %2, %3)"
+	).arg(Colors.Fields.red()).arg(Colors.Fields.green()).arg(Colors.Fields.blue()));
 	m_graph -> setMinimumSize(150, 100);
 	m_graph -> setAutoFillBackground(true);
-	pal.setColor(QPalette::Window, Colors.Fields);
-	m_graph -> setPalette(pal);
 	m_graphLayout -> addWidget(m_graph);
 
 	// Spacing
@@ -57,13 +75,21 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	m_graphLayout -> addWidget(m_function);
 
 	// ------------------------------ Button layout ------------------------------
+	// Background
+	m_buttonBG = new QWidget;
+	m_buttonBG -> setStyleSheet(QString(
+		"border-radius: 10px;"
+		"background-color: rgb(%1, %2, %3)"
+	).arg(Colors.BG.red() + 10).arg(Colors.BG.green() + 10).arg(Colors.BG.blue() + 10));
+	m_optionsLayout = new QVBoxLayout(m_buttonBG);
+
 	// Header
-	m_buttonHeader = new QLabel("<b>Options/Info</b>");
+	m_buttonHeader = new QLabel("<b>Options</b>");
 	m_buttonHeader -> setFont(QFont("Nexa"));
 	pal.setColor(QPalette::WindowText, Qt::gray);
 	m_buttonHeader -> setPalette(pal);
 	m_buttonHeader -> setStyleSheet("font: 19pt");
-	m_buttonLayout -> addWidget(m_buttonHeader);
+	m_optionsLayout -> addWidget(m_buttonHeader);
 
 	// X limit input fields
 	m_limitsLayout = new QHBoxLayout;
@@ -79,17 +105,27 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 	m_limitMax -> setFieldToolTip("Maximum <b>x</b> value to be calculated.");
 	m_limitMax -> setFieldValidator(m_intRegExVal);
 	m_limitsLayout -> addWidget(m_limitMax);
-	m_buttonLayout -> addLayout(m_limitsLayout);
+	m_optionsLayout -> addLayout(m_limitsLayout);
+
+	// Finalize the options menu
+	m_buttonBG -> setMaximumWidth(m_limitMin -> maximumWidth() + m_limitMax -> maximumWidth());
+	m_buttonLayout -> addWidget(m_buttonBG);
 
 	// Stretching
 	m_buttonLayout -> addStretch();
 
 	// Reset function button
-	m_resetFunctionButton = new QPushButton("Reset the function");
-	pal.setColor(QPalette::Button, Colors.Fields);
+	m_resetFunctionButton = new QPushButton("Reset the function input field");
+	m_resetFunctionButton -> setFixedHeight(25);
 	pal.setColor(QPalette::ButtonText, Colors.ButtonText);
-	pal.setColor(QPalette::Accent, QColor());
 	m_resetFunctionButton -> setPalette(pal);
+	m_resetFunctionButton -> setStyleSheet(pushButtonStyleSheet);
+	connect(
+		m_resetFunctionButton,
+		QPushButton::clicked,
+		&(m_function -> getInputField()),
+		QLineEdit::clear
+	);
 	m_buttonLayout -> addWidget(m_resetFunctionButton);
 
 	// Spacing
@@ -104,10 +140,12 @@ MainWindow::~MainWindow() {
 			delete m_graph;
 			delete m_function;
 		delete m_buttonLayout;
-			delete m_buttonHeader;
-			delete m_limitsLayout;
-				delete m_limitMin;
-				delete m_limitMax;
+			delete m_buttonBG;
+				delete m_optionsLayout;
+					delete m_buttonHeader;
+					delete m_limitsLayout;
+						delete m_limitMin;
+						delete m_limitMax;
 			delete m_resetFunctionButton;
 
 	delete m_intRegExVal;

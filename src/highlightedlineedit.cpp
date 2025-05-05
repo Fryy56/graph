@@ -41,16 +41,16 @@ HighlightedLineEdit::HighlightedLineEdit(
 }
 
 void HighlightedLineEdit::setColors(
-	QColor const&& offLabelColor,
-	QColor const&& onLabelColor,
-	QColor const&& fieldsColor,
-	QColor const&& textColor
+	QColor const& offLabelColor,
+	QColor const& onLabelColor,
+	QColor const& fieldsColor,
+	QColor const& textColor
 ) {
-	Colors.offLabelColor = std::move(offLabelColor);
-	Colors.onLabelColor = std::move(onLabelColor);
-	TintingLabel::setColors(std::move(offLabelColor), std::move(onLabelColor));
-	Colors.fieldsColor = std::move(fieldsColor);
-	Colors.textColor = std::move(textColor);
+	Colors.offLabelColor = offLabelColor;
+	Colors.onLabelColor = onLabelColor;
+	TintingLabel::setColors(offLabelColor, onLabelColor);
+	Colors.fieldsColor = fieldsColor;
+	Colors.textColor = textColor;
 
 	return;
 }

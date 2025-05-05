@@ -17,8 +17,8 @@ public:
 	~TintingLabel() override;
 
 	static void setColors(
-		QColor const&& offColor = std::move(Colors.offColor),
-		QColor const&& onColor = std::move(Colors.onColor)
+		QColor const& offColor = Colors.offColor,
+		QColor const& onColor = Colors.onColor
 	);
 
 private:

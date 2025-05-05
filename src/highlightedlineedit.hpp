@@ -16,14 +16,15 @@ public:
 	~HighlightedLineEdit() override;
 
 	static void setColors(
-		QColor const&& offLabelColor = std::move(Colors.offLabelColor),
-		QColor const&& onLabelColor = std::move(Colors.onLabelColor),
-		QColor const&& fieldsColor = std::move(Colors.fieldsColor),
-		QColor const&& textColor = std::move(Colors.textColor)
+		QColor const& offLabelColor = Colors.offLabelColor,
+		QColor const& onLabelColor = Colors.onLabelColor,
+		QColor const& fieldsColor = Colors.fieldsColor,
+		QColor const& textColor = Colors.textColor
 	);
 
 	// Getters (and technically setters)
-	QHBoxLayout& getLayout() { return *m_labelLayout; }
+	QVBoxLayout& getMainLayout() { return *m_mainLayout; }
+	QHBoxLayout& getLabelLayout() { return *m_labelLayout; }
 	TintingLabel& getLabel() { return *m_label; }
 	QLineEdit& getInputField() { return *m_inputField; }
 	void heightViaLabel(int height);

@@ -19,9 +19,9 @@ TintingLabel::TintingLabel(QString const& text, QWidget* parent) : TintingLabel(
 	this -> setText(text);
 }
 
-void TintingLabel::setColors(QColor const&& offColor, QColor const&& onColor) {
-	Colors.offColor = std::move(offColor);
-	Colors.onColor = std::move(onColor);
+void TintingLabel::setColors(QColor const& offColor, QColor const& onColor) {
+	Colors.offColor = offColor;
+	Colors.onColor = onColor;
 
 	return;
 }

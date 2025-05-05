@@ -27,6 +27,7 @@ private:
 		QColor BG;
 		QColor Fields;
 		QColor ButtonText;
+		QColor GraphLine;
 	} const Colors;
 
 	QWidget* m_centralWidget;
@@ -36,10 +37,12 @@ private:
 			QWidget* m_graph;
 			HighlightedLineEdit* m_function;
 		QVBoxLayout* m_buttonLayout;
-			QLabel* m_buttonHeader;
-			QHBoxLayout* m_limitsLayout;
-				HighlightedLineEdit* m_limitMin;
-				HighlightedLineEdit* m_limitMax;
+			QWidget* m_buttonBG;
+				QVBoxLayout* m_optionsLayout;
+					QLabel* m_buttonHeader;
+					QHBoxLayout* m_limitsLayout;
+						HighlightedLineEdit* m_limitMin;
+						HighlightedLineEdit* m_limitMax;
 			QPushButton* m_resetFunctionButton;
 	
 	QRegularExpressionValidator* m_intRegExVal;
