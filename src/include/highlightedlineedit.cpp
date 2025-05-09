@@ -109,7 +109,7 @@ void HighlightedLineEdit::propSetBorderColor(QColor const& color) {
 
 	return;
 }
-#include <QColorDialog>
+
 void HighlightedLineEdit::clearWithPulse() {
 	m_inputField -> clear();
 	m_clearPulse -> stop();
