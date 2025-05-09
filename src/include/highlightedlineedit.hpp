@@ -62,11 +62,11 @@ private:
 
 	QVBoxLayout* m_mainLayout;
 
-		// Objecttree
+		// Objecttree (m_mainLayout)
 	QHBoxLayout* m_labelLayout;
 		TintingLabel* m_label;
 	QLineEdit* m_inputField;
-		// Objecttree
+		// Objecttree (m_mainLayout)
 
 	QPropertyAnimation* m_clearPulse;
 

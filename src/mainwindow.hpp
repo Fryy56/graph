@@ -58,7 +58,7 @@ private:
 
 	QWidget* m_centralWidget;
 
-		// Objecttree
+		// Objecttree (m_centralWidget)
 	QHBoxLayout* m_mainLayout;
 		QVBoxLayout* m_graphLayout;
 			QWidget* m_graph;
@@ -74,7 +74,7 @@ private:
 							QPushButton* m_resetLimitsButton;
 						HighlightedLineEdit* m_limitMax;
 			QPushButton* m_resetFunctionButton;
-		// Objecttree
+		// Objecttree (m_centralWidget)
 	
 	QRegularExpressionValidator* m_intRegExVal;
 };
