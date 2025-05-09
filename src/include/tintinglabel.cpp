@@ -26,7 +26,7 @@ void TintingLabel::setColors(QColor const& offColor, QColor const& onColor) {
 	return;
 }
 
-void TintingLabel::setColor(QColor const& color) {
+void TintingLabel::propSetColor(QColor const& color) {
 	QPalette pal;
 	pal.setColor(QPalette::WindowText, color);
 	this -> setPalette(pal);

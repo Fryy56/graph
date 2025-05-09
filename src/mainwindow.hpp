@@ -5,7 +5,9 @@
 #include <QLayout>
 #include <QLineEdit>
 #include <QRegularExpressionValidator>
-#include "highlightedlineedit.hpp"
+#include <QSettings>
+#include "include/highlightedlineedit.hpp"
+#include "include/separator.hpp"
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -22,16 +24,41 @@ public:
 	~MainWindow();
 
 private:
+	void readSettings();
+	void writeSettings();
+
 	// Fields
 	static struct {
 		QColor BG;
 		QColor Fields;
 		QColor ButtonText;
-		QColor GraphLine;
 	} const Colors;
+	static struct {
+		// win/
+			QSize windowSize;
+			bool isMax;
+		// fields/
+			QString function;
+			QString minX;
+			QString maxX;
+		QColor graphLineColor;
+	} const DefaultValues;
+	struct {
+		// win/
+		QSize windowSize;
+		bool isMax;
+		// fields/
+			QString function;
+			QString minX;
+			QString maxX;
+		QColor graphLineColor;
+	} SettingsValues;
+
+	QSettings* m_settings;
 
 	QWidget* m_centralWidget;
 
+		// Objecttree
 	QHBoxLayout* m_mainLayout;
 		QVBoxLayout* m_graphLayout;
 			QWidget* m_graph;
@@ -39,11 +66,15 @@ private:
 		QVBoxLayout* m_buttonLayout;
 			QWidget* m_buttonBG;
 				QVBoxLayout* m_optionsLayout;
-					QLabel* m_buttonHeader;
+					QLabel* m_optionsHeader;
+					Separator* m_optionsSeparator;
 					QHBoxLayout* m_limitsLayout;
 						HighlightedLineEdit* m_limitMin;
+						QVBoxLayout* m_resetLimitsButtonOffsetLayout;
+							QPushButton* m_resetLimitsButton;
 						HighlightedLineEdit* m_limitMax;
 			QPushButton* m_resetFunctionButton;
+		// Objecttree
 	
 	QRegularExpressionValidator* m_intRegExVal;
 };

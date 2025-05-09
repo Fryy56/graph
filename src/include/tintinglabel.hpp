@@ -7,7 +7,7 @@
 class TintingLabel final : public QLabel {
 	Q_OBJECT
 
-	Q_PROPERTY(QColor color READ getColor WRITE setColor)
+	Q_PROPERTY(QColor color READ propGetColor WRITE propSetColor)
 
 	friend class HighlightedLineEdit;
 
@@ -22,9 +22,9 @@ public:
 	);
 
 private:
-	// Getters/setters
-	QColor getColor() { return this -> palette().windowText().color(); }
-	void setColor(QColor const&);
+	// Property getters/setters
+	QColor propGetColor() const { return this -> palette().windowText().color(); }
+	void propSetColor(QColor const&);
 
 	void onSelect() { m_toOnAnim -> start(); }
 	void onDeselect() { m_toOffAnim -> start(); }

@@ -10,13 +10,17 @@ set(app_icon_resource_windows "${CMAKE_CURRENT_SOURCE_DIR}/resources/icon.rc")
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 qt_standard_project_setup()
 
-qt_add_executable(graph
-        src/main.cpp
-        src/mainwindow.cpp
-        src/tintinglabel.cpp
-        src/highlightedlineedit.cpp
+set(CMAKE_AUTORCC ON)
 
-        ${app_icon_resource_windows}
+qt_add_executable(graph
+    src/main.cpp
+    src/mainwindow.cpp
+    src/include/tintinglabel.cpp
+    src/include/highlightedlineedit.cpp
+    src/include/separator.cpp
+
+    resources/qresource.qrc
+    ${app_icon_resource_windows}
 )
 target_link_libraries(graph PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
 
@@ -25,6 +29,7 @@ set_target_properties(graph PROPERTIES
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
     WIN32_EXECUTABLE TRUE
+    RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin$<0:>
 )
 
 include(GNUInstallDirs)
