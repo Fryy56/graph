@@ -85,7 +85,7 @@ private:
 		return precedence;
 	}
 
-	std::string parse(std::string& a) { // No dependencies
+	std::string parse(std::string const& a) { // No dependencies
 		std::string parsed_input = "";
 		// Check for unary minuses
 		for (int i = 0; i < a.size() - 1; i++) {
@@ -129,7 +129,7 @@ private:
 	}
 
 	// Conversion
-	void conversion(std::string &input) { // 1 dependency - prec
+	void conversion(std::string const& input) { // 1 dependency - prec
 		std::string cur_num = "";
 		for (char cur_char : input)
 			if (('0' <= cur_char && cur_char <= '9') || cur_char == '.') // If it's an operand
@@ -184,9 +184,9 @@ private:
 	}
 
 public:
-	std::optional<double> operator()(std::string input) {
+	std::optional<double> operator()(std::string const& expression) {
 		try {
-			input = parse(input);
+			std::string input = parse(expression);
 			conversion(input);
 
 			// Calculating
@@ -252,17 +252,14 @@ public:
 				}
 			}
 		}
-		catch (int excep) {
+		catch (int) {
 			return std::nullopt;
 		}
 
 		return pop();
 	}
-	static std::optional<double>calc_once(std::string expr) {
-		auto calc = new Calc;
-		auto ret = (*calc)(expr);
-		delete calc;
-
-		return ret;
+	static std::optional<double> calc_once(std::string const& expr) {
+		Calc calc;
+		return calc(expr);
 	}
 };
