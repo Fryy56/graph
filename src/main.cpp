@@ -1,7 +1,7 @@
 #include <QApplication>
 #include "mainwindow.hpp"
 #include <QMessageBox>
-#include "include/styles.hpp"
+#include "styles.hpp"
 
 
 int main(int argc, char* argv[]) {
