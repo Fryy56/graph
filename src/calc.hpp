@@ -2,6 +2,9 @@
 #include <vector>
 #include <math.h>
 #include <optional>
+#include <QString>
+#include <QList>
+
 
 class Calc final {
 private:
@@ -12,27 +15,27 @@ private:
 	};
 
 	struct Conv_Stack {
-		char contents;
+		QChar contents;
 		Conv_Stack* next;
 	};
 
 	// Field data structures declarations
 	Conv_Stack* conv_st = nullptr;
 	Stack* st = nullptr;
-	std::vector <std::string> postfix;
+	QList<QString> postfix;
 
 	// Stack related functions
-	void conv_push(char a) { // No dependencies | Calls to malloc
+	void conv_push(QChar a) { // No dependencies | Calls to malloc
 		Conv_Stack* new_st = (Conv_Stack*)malloc(sizeof(Conv_Stack));
 		new_st -> contents = a;
 		new_st -> next = conv_st;
 		conv_st = new_st;
 	}
 
-	char conv_pop() { // No dependencies
+	QChar conv_pop() { // No dependencies
 		if (conv_st == nullptr)
 			throw(1);
-		char output = conv_st -> contents;
+		QChar output = conv_st -> contents;
 		Conv_Stack* temp_ptr = conv_st -> next;
 		free(conv_st);
 		conv_st = temp_ptr;
@@ -57,9 +60,9 @@ private:
 	}
 
 	// Extra functions
-	int prec(char a) { // No dependencies
+	int prec(QChar a) { // No dependencies
 		int precedence;
-		switch (a) {
+		switch (a.toLatin1()) {
 			case '+': [[fallthrough]];
 			case '-':
 				precedence = 0;
@@ -79,14 +82,14 @@ private:
 				precedence = 3;
 				break;
 			default:
-				throw(2);
+				throw(3);
 		}
 
 		return precedence;
 	}
 
-	std::string parse(std::string const& a) { // No dependencies
-		std::string parsed_input = "";
+	QString parse(QString const& a) { // No dependencies
+		QString parsed_input = "";
 		// Check for unary minuses
 		for (int i = 0; i < a.size() - 1; i++) {
 			if (a[i] == '(' && a[i + 1] == '-') {
@@ -100,48 +103,42 @@ private:
 
 		// Check for parenthesis correctness
 		int paren = 0;
-		for (char i : parsed_input) {
+		for (QChar i : parsed_input) {
 			if (i == '(')
 				paren++;
 			else if (i == ')')
 				paren--;
 			
 			if (paren < 0)
-				throw(3);
+				throw(4);
 		}
 		if (paren != 0)
-			throw(4);
+			throw(5);
 
 		// Replace multicharacter operators with single character ones
-		for (int pos = parsed_input.find("sin"); pos != -1; pos = parsed_input.find("sin")) // Sine
-			parsed_input.replace(pos, 3, "s");
-		for (int pos = parsed_input.find("cos"); pos != -1; pos = parsed_input.find("cos")) // Cosine
-			parsed_input.replace(pos, 3, "c");
-		for (int pos = parsed_input.find("tg"); pos != -1; pos = parsed_input.find("tg")) // Tangent
-			parsed_input.replace(pos, 2, "t");
-		for (int pos = parsed_input.find("sqrt"); pos != -1; pos = parsed_input.find("sqrt")) // Square root
-			parsed_input.replace(pos, 4, "r");
-		for (int pos = parsed_input.find("ln"); pos != -1; pos = parsed_input.find("ln")) // Logarithm
-			parsed_input.replace(pos, 2, "l");
-		
-		
+		parsed_input.replace("sin", "s"); // Sine
+		parsed_input.replace("cos", "c"); // Cosine
+		parsed_input.replace("tan", "t"); // Tangent
+		parsed_input.replace("sqrt", "r"); // Square root
+		parsed_input.replace("ln", "l"); // Logarithm
+
 		return parsed_input;
 	}
 
 	// Conversion
-	void conversion(std::string const& input) { // 1 dependency - prec
-		std::string cur_num = "";
-		for (char cur_char : input)
+	void conversion(QString const& input) { // 1 dependency - prec
+		QString cur_num;
+		for (auto cur_char : input)
 			if (('0' <= cur_char && cur_char <= '9') || cur_char == '.') // If it's an operand
 				cur_num += cur_char;
 			else { // If it's an operator
 				// Add what number we have
 				if (cur_num != "") {
-					unsigned short pointCount = 0;
-					for (char i : cur_num)
+					/* unsigned short pointCount = 0;
+					for (auto i : cur_num)
 						pointCount += (i == '.');
 					if (cur_num[0] == '.' || cur_num[cur_num.size() - 1] == '.' || pointCount > 1)
-						throw(10);
+						throw(6); */
 					postfix.push_back(cur_num);
 					cur_num = "";
 				}
@@ -154,7 +151,7 @@ private:
 				
 				if (cur_char == ')') {
 					while (conv_st -> contents != '(')
-						postfix.push_back(std::string(1, conv_pop()));
+						postfix.push_back(QString(conv_pop()));
 					conv_pop();
 					continue;
 				}
@@ -164,37 +161,37 @@ private:
 					conv_push(cur_char);
 				else {
 					while (conv_st != nullptr && conv_st -> contents != '(' && prec(cur_char) <= prec(conv_st -> contents))
-						postfix.push_back(std::string(1, conv_pop()));
+						postfix.push_back(QString(conv_pop()));
 					conv_push(cur_char);
 				}
 			}
 
 		// Add what we have (again)
 		if (cur_num != "") {
-			unsigned short pointCount = 0;
-			for (char i : cur_num)
+			/* unsigned short pointCount = 0;
+			for (auto i : cur_num)
 				pointCount += (i == '.');
 			if (cur_num[0] == '.' || cur_num[cur_num.size() - 1] == '.' || pointCount > 1)
-				throw(10);
+				throw(6); */
 			postfix.push_back(cur_num);
 		}
 		// Clear the conversion stack (finalize the conversion)
 		while (conv_st != nullptr)
-			postfix.push_back(std::string(1, conv_pop()));;
+			postfix.push_back(QString(conv_pop()));;
 	}
 
 public:
-	std::optional<double> operator()(std::string const& expression) {
+	std::optional<double> operator()(QString const& expression) {
 		try {
-			std::string input = parse(expression);
+			QString input = parse(expression);
 			conversion(input);
 
 			// Calculating
-			for (std::string i : postfix) { //! UPDATE OPERATORS HERE WHEN ADDING NEW ONES TO prec()
+			for (auto i : postfix) { //! UPDATE OPERATORS HERE WHEN ADDING NEW ONES TO prec()
 				double num1;
 				double num2;
 
-				switch (i[0]) {
+				switch (i[0].toLatin1()) {
 					case '+':
 						num2 = pop();
 						num1 = pop();
@@ -216,7 +213,7 @@ public:
 						if (num2 != 0) // Handle division by 0
 							push(num1 / num2);
 						else
-							throw(5);
+							throw(7);
 						break;
 					case '^':
 						num2 = pop();
@@ -237,28 +234,44 @@ public:
 						if (num1 >= 0) // Handle imaginary roots (we're keeping it real :speaking_head: :fire:)
 							push(sqrt(num1));
 						else
-							throw(6);
+							throw(8);
 						break;
 					case 'l':
 						num1 = pop();
 						if (num1 >= 0) // Handle negative values, how am I supposed to know this wth
 							push(log(num1));
 						else
-							throw(7);
+							throw(9);
 						break;
 
 					default:
-						push(stod(i));
+						try {
+							push(stod(i.toStdString()));
+						} catch (...) {
+							throw(10);
+						}
 				}
 			}
 		}
 		catch (int) {
+			/*
+				1 - popping from an empty conversion stack
+				2 - popping from an empty stack
+				3 - precedence operator reaching an unsupported character
+				4 - left parenthesis outweighing right parenthesis (paren < 0)
+				5 - right parenthesis outweighing left parenthesis (paren != 0 in the end)
+				6 - faulty FP number format (disabled)
+				7 - division by 0
+				8 - square root of a negative
+				9 - log of a negative
+				10 - invalid character conversion
+			*/
 			return std::nullopt;
 		}
 
 		return pop();
 	}
-	static std::optional<double> calc_once(std::string const& expr) {
+	static std::optional<double> calc_once(QString const& expr) {
 		Calc calc;
 		return calc(expr);
 	}
