@@ -4,7 +4,7 @@
 #include <QPropertyAnimation>
 
 
-class TintingLabel final : public QLabel {
+class TintingLabel : public QLabel {
 	Q_OBJECT
 
 	Q_PROPERTY(QColor color READ propGetColor WRITE propSetColor)
@@ -21,7 +21,7 @@ public:
 		QColor const& onColor = Colors.onColor
 	);
 
-private:
+protected:
 	// Property getters/setters
 	QColor propGetColor() const { return this -> palette().windowText().color(); }
 	void propSetColor(QColor const&);

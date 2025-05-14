@@ -1,11 +1,14 @@
 #include "mainwindow.hpp"
+#include <QColorDialog>
 
 
 // Static structs init
 decltype(MainWindow::Colors) const MainWindow::Colors = {
 	{25, 25, 25}, // BG
 	{45, 45, 45}, // Fields
-	{175, 175, 175} // ButtonText
+	{175, 175, 175}, // ButtonText
+	{60, 60, 60}, // ButtonBorder
+	{150, 150, 150} // LabelText
 };
 decltype(MainWindow::DefaultValues) const MainWindow::DefaultValues = {
 	// win/
@@ -41,18 +44,20 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 	auto pushButtonStyleSheet = QString(R"(
 		QPushButton {
 			background-color: %1;
-			border: 2px solid rgb(60, 60, 60);
+			border: 2px solid %2;
 			border-radius: 5px;
 		}
 		QPushButton:hover {
-			background-color: %2;
+			background-color: %3;
 			border-color: rgb(80, 80, 80);
 			color: rgb(255, 255, 255);
 		}
 		QPushButton:pressed {
-			border-color: rgb(60, 60, 60);
+			border-color: %2;
 		}
-	)").arg(Colors.BG.name())
+	)")
+	.arg(Colors.BG.name())
+	.arg(Colors.ButtonBorder.name())
 	.arg(Colors.Fields.name());
 
 	// Central widget
@@ -71,12 +76,12 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 
 	// ------------------------------ Graph layout ------------------------------
 	// Graph
-	m_graph = new QWidget;
+	m_graph = new Graph(this);
 	m_graph -> setStyleSheet(QString(R"(
 			border-radius: 20px;
 			background-color: %1;
 	)").arg(Colors.Fields.name()));
-	m_graph -> setMinimumSize(150, 100);
+	m_graph -> setMinimumSize(700, 500);
 	m_graph -> setAutoFillBackground(true);
 	m_graphLayout -> addWidget(m_graph);
 
@@ -90,7 +95,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 			font: 15pt;
 		}
 	)");
-	m_function -> setFieldSafeStyleSheet("border-radius: 5px;");
+	m_function -> setFieldStyleSheetSafe("border-radius: 5px;");
 	m_function -> heightViaLabel(25);
 	m_function -> setFieldMaxLength(255);
 	m_function -> setFieldToolTip("Enter a function relative to <b>x</b>.");
@@ -124,19 +129,20 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 
 	// Separator
 	m_optionsSeparator = new Separator(Separator::H);
-	m_optionsSeparator -> setColor(Qt::gray);
+	m_optionsSeparator -> setColor(Qt::darkGray);
 	m_optionsLayout -> addWidget(m_optionsSeparator);
 
-	// X limit input fields and reset button
+	// X min limit input field
 	m_limitsLayout = new QHBoxLayout;
 	m_limitMin = new HighlightedLineEdit("Min <b>x</b>", "-10");
 	m_limitMin -> setFieldMaxLength(11);
 	m_limitMin -> widthViaField(130);
-	m_limitMin -> setFieldSafeStyleSheet("border-radius: 5px; font: 11px;");
+	m_limitMin -> setFieldStyleSheetSafe("border-radius: 5px; font: 11px;");
 	m_limitMin -> setFieldToolTip("Minimum <b>x</b> value to be calculated.");
 	m_limitMin -> setFieldValidator(m_intRegExVal);
 	m_limitMin -> setFieldText(SettingsValues.minX);
 	m_limitsLayout -> addWidget(m_limitMin);
+	// Limits reset button
 	m_resetLimitsButtonOffsetLayout = new QVBoxLayout;
 	m_resetLimitsButton = new QPushButton;
 	m_resetLimitsButton -> setIcon(QIcon(":/icons/reset.png"));
@@ -147,10 +153,11 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 	m_resetLimitsButtonOffsetLayout -> addSpacing(22);
 	m_resetLimitsButtonOffsetLayout -> addWidget(m_resetLimitsButton);
 	m_limitsLayout -> addLayout(m_resetLimitsButtonOffsetLayout);
+	// X max limit input field
 	m_limitMax = new HighlightedLineEdit("Max <b>x</b>", "10");
 	m_limitMax -> setFieldMaxLength(11);
 	m_limitMax -> widthViaField(130);
-	m_limitMax -> setFieldSafeStyleSheet("border-radius: 5px; font: 11px;");
+	m_limitMax -> setFieldStyleSheetSafe("border-radius: 5px; font: 11px;");
 	m_limitMax -> setFieldToolTip("Maximum <b>x</b> value to be calculated.");
 	m_limitMax -> setFieldValidator(m_intRegExVal);
 	m_limitMax -> setFieldText(SettingsValues.maxX);
@@ -170,12 +177,51 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 
 	m_optionsLayout -> addLayout(m_limitsLayout);
 
+	// Graph line color selector
+	// Label
+	m_graphColorLabel = new QLabel("Graph line color");
+	pal.setColor(QPalette::WindowText, Colors.LabelText);
+	m_graphColorLabel -> setPalette(pal);
+	m_optionsLayout -> addWidget(m_graphColorLabel);
+	// Color picker
+	m_graphColorPicker = new ColorPicker(
+		SettingsValues.graphLineColor,
+		HighlightedLineEdit::getColors().borderColor
+	);
+	m_graphColorPicker -> setFixedHeight(30);
+	m_optionsLayout -> addWidget(m_graphColorPicker);
+
 	// Finalize the options menu
 	m_buttonBG -> setMaximumWidth(m_limitMin -> maximumWidth() + m_limitMax -> maximumWidth());
 	m_buttonLayout -> addWidget(m_buttonBG);
 
 	// Stretching
 	m_buttonLayout -> addStretch();
+
+	// Plot graph button
+	m_plotGraphButton = new QPushButton(QIcon(":/icons/plot.png"), "Plot");
+	QFont plotButtonFont;
+	plotButtonFont.setPointSize(25);
+	//plotButtonFont.setBold(true);
+	m_plotGraphButton -> setFont(plotButtonFont);
+	m_plotGraphButton -> setIconSize({32, 32});
+	m_plotGraphButton -> setFixedSize(220, 50);
+	pal.setColor(QPalette::ButtonText, Colors.ButtonText);
+	m_plotGraphButton -> setPalette(pal);
+	m_plotGraphButton -> setStyleSheet(pushButtonStyleSheet);
+	connect(
+		m_plotGraphButton,
+		QPushButton::clicked,
+		m_graph,
+		Graph::build
+	);
+	connect(
+		m_plotGraphButton,
+		QPushButton::clicked,
+		m_function,
+		HighlightedLineEdit::pulse
+	);
+	m_buttonLayout -> addWidget(m_plotGraphButton);
 
 	// Reset function button
 	m_resetFunctionButton = new QPushButton(QIcon(":/icons/reset.png"), "Reset the function input field");
@@ -214,10 +260,10 @@ void MainWindow::writeSettings() {
 		m_settings -> setValue("win/windowSize", this -> size());
 		m_settings -> setValue("win/isMax", this -> isMaximized());
 	// fields
-		m_settings -> setValue("fields/function", m_function -> getInputField().text());
-		m_settings -> setValue("fields/minX", m_limitMin -> getInputField().text());
-		m_settings -> setValue("fields/maxX", m_limitMax -> getInputField().text());
-	//m_settings -> setValue("graphLineColor", ); pls implement this
+		m_settings -> setValue("fields/function", m_function -> getInputField() -> text());
+		m_settings -> setValue("fields/minX", m_limitMin -> getInputField() -> text());
+		m_settings -> setValue("fields/maxX", m_limitMax -> getInputField() -> text());
+	m_settings -> setValue("graphLineColor", SettingsValues.graphLineColor);
 
 	m_settings -> sync();
 	return;

@@ -6,7 +6,7 @@
 #include <QEvent>
 
 
-class HighlightedLineEdit final : public QWidget {
+class HighlightedLineEdit : public QWidget {
 	Q_OBJECT
 
 	Q_PROPERTY(QColor borderColor READ propGetBorderColor WRITE propSetBorderColor)
@@ -26,20 +26,20 @@ public:
 	);
 
 	// Getters (and technically setters)
-	QVBoxLayout& getMainLayout() const { return *m_mainLayout; }
-	QHBoxLayout& getLabelLayout() const { return *m_labelLayout; }
-	TintingLabel& getLabel() const { return *m_label; }
-	QLineEdit& getInputField() const { return *m_inputField; }
+	QVBoxLayout* getMainLayout() const { return m_mainLayout; }
+	QHBoxLayout* getLabelLayout() const { return m_labelLayout; }
+	TintingLabel* getLabel() const { return m_label; }
+	QLineEdit* getInputField() const { return m_inputField; }
 	void heightViaLabel(int height);
 	void widthViaField(int width);
 	void setLabelStyleSheet(QString const& text) { m_label -> setStyleSheet(text); }
-	void setFieldSafeStyleSheet(QString const& styleSheet); //! USE THIS FOR ALL CHANGES
+	void setFieldStyleSheetSafe(QString const& styleSheet); //! USE THIS FOR ALL CHANGES
 	void setFieldToolTip(QString const& text) { m_inputField -> setToolTip(text); };
 	void setFieldMaxLength(int length) { m_inputField -> setMaxLength(length); };
 	void setFieldValidator(QValidator const* val) { m_inputField -> setValidator(val); }
 	void setFieldText(QString const& text) { m_inputField -> setText(text); }
 
-private:
+protected:
 	bool eventFilter(QObject*, QEvent*) override;
 
 	// Property getters/setters
@@ -59,17 +59,21 @@ private:
 		QColor textColor;
 		QColor borderColor;
 	} Colors;
+public: // Funny getter
+	static decltype(Colors) getColors() { return Colors; }
+protected:
 
 	QVBoxLayout* m_mainLayout;
 
-		// Objecttree (m_mainLayout)
-	QHBoxLayout* m_labelLayout;
-		TintingLabel* m_label;
-	QLineEdit* m_inputField;
-		// Objecttree (m_mainLayout)
+	// Objecttree (m_mainLayout)
+		QHBoxLayout* m_labelLayout;
+			TintingLabel* m_label;
+		QLineEdit* m_inputField;
+	// Objecttree (m_mainLayout)
 
 	QPropertyAnimation* m_clearPulse;
 
 public slots:
 	void clearWithPulse();
+	void pulse();
 };

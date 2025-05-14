@@ -85,7 +85,7 @@ void HighlightedLineEdit::widthViaField(int width) {
 	return;
 }
 
-void HighlightedLineEdit::setFieldSafeStyleSheet(QString const& styleSheet) {
+void HighlightedLineEdit::setFieldStyleSheetSafe(QString const& styleSheet) {
 	m_customFieldStyleSheet = styleSheet;
 	m_inputField -> setStyleSheet(m_defaultFieldStyleSheet + m_customFieldStyleSheet + "}");
 
@@ -112,6 +112,13 @@ void HighlightedLineEdit::propSetBorderColor(QColor const& color) {
 
 void HighlightedLineEdit::clearWithPulse() {
 	m_inputField -> clear();
+	m_clearPulse -> stop();
+	m_clearPulse -> start();
+
+	return;
+}
+
+void HighlightedLineEdit::pulse() {
 	m_clearPulse -> stop();
 	m_clearPulse -> start();
 

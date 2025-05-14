@@ -3,7 +3,7 @@
 #include <QFrame>
 
 
-class Separator final : public QFrame {
+class Separator : public QFrame {
 	Q_OBJECT
 
 public:
@@ -34,7 +34,7 @@ public:
 	void setWidth(int width);
 	void setFadeLength(int fadeLength);
 
-private:
+protected:
 	void paintEvent(QPaintEvent*) override;
 
 	void setGeneralWidth(int width) { m_orientation ? this -> setFixedWidth(width) : this -> setFixedHeight(width); } // vertical : horizontal

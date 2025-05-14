@@ -15,9 +15,12 @@ set(CMAKE_AUTORCC ON)
 qt_add_executable(graph
     src/main.cpp
     src/mainwindow.cpp
+    src/graph.cpp
     src/include/tintinglabel.cpp
     src/include/highlightedlineedit.cpp
     src/include/separator.cpp
+    src/include/colordisplay.cpp
+    src/include/colorpicker.cpp
 
     resources/qresource.qrc
     ${app_icon_resource_windows}

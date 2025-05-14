@@ -6,18 +6,18 @@
 #include <QLineEdit>
 #include <QRegularExpressionValidator>
 #include <QSettings>
+#include "graph.hpp"
 #include "include/highlightedlineedit.hpp"
 #include "include/separator.hpp"
+#include "include/colorpicker.hpp"
 
-QT_BEGIN_NAMESPACE
-namespace Ui {
-	class MainWindow;
-}
-QT_END_NAMESPACE
 
+class Graph;
 
 class MainWindow : public QMainWindow {
 	Q_OBJECT
+
+	friend class Graph;
 
 public:
 	explicit MainWindow(QWidget* parent = nullptr);
@@ -32,6 +32,8 @@ private:
 		QColor BG;
 		QColor Fields;
 		QColor ButtonText;
+		QColor ButtonBorder;
+		QColor LabelText;
 	} const Colors;
 	static struct {
 		// win/
@@ -45,8 +47,8 @@ private:
 	} const DefaultValues;
 	struct {
 		// win/
-		QSize windowSize;
-		bool isMax;
+			QSize windowSize;
+			bool isMax;
 		// fields/
 			QString function;
 			QString minX;
@@ -58,23 +60,28 @@ private:
 
 	QWidget* m_centralWidget;
 
-		// Objecttree (m_centralWidget)
-	QHBoxLayout* m_mainLayout;
-		QVBoxLayout* m_graphLayout;
-			QWidget* m_graph;
-			HighlightedLineEdit* m_function;
-		QVBoxLayout* m_buttonLayout;
-			QWidget* m_buttonBG;
-				QVBoxLayout* m_optionsLayout;
-					QLabel* m_optionsHeader;
-					Separator* m_optionsSeparator;
-					QHBoxLayout* m_limitsLayout;
-						HighlightedLineEdit* m_limitMin;
-						QVBoxLayout* m_resetLimitsButtonOffsetLayout;
-							QPushButton* m_resetLimitsButton;
-						HighlightedLineEdit* m_limitMax;
-			QPushButton* m_resetFunctionButton;
-		// Objecttree (m_centralWidget)
+	// Objecttree (m_centralWidget)
+		QHBoxLayout* m_mainLayout;
+			QVBoxLayout* m_graphLayout;
+				Graph* m_graph;
+				HighlightedLineEdit* m_function;
+			QVBoxLayout* m_buttonLayout;
+				QWidget* m_buttonBG;
+					QVBoxLayout* m_optionsLayout;
+						QLabel* m_optionsHeader;
+						Separator* m_optionsSeparator;
+						QHBoxLayout* m_limitsLayout;
+							HighlightedLineEdit* m_limitMin;
+							QVBoxLayout* m_resetLimitsButtonOffsetLayout;
+								QPushButton* m_resetLimitsButton;
+							HighlightedLineEdit* m_limitMax;
+						QLabel* m_graphColorLabel;
+						ColorPicker* m_graphColorPicker;
+				QPushButton* m_plotGraphButton;
+				QPushButton* m_resetFunctionButton;
+	// Objecttree (m_centralWidget)
 	
 	QRegularExpressionValidator* m_intRegExVal;
+
+private slots:
 };
