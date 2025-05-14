@@ -1,5 +1,6 @@
 <RCC>
     <qresource>
         <file>icons/reset.png</file>
+        <file>icons/plot.png</file>
     </qresource>
 </RCC>
