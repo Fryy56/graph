@@ -18,31 +18,25 @@ Graph::Graph(MainWindow* win, QWidget* parent) : QWidget(parent), m_win(win) {
 #include <fstream>
 void Graph::build() {
 	m_path -> clear();
-	Calc calc;
 
-	auto expr = getText(m_win -> m_function -> getInputField());
 	int minX = getText(m_win -> m_limitMin -> getInputField()).toInt();
 	int maxX = getText(m_win -> m_limitMax -> getInputField()).toInt();
 	double dx = double(maxX - minX) / this -> width();
 
 	QList<std::optional<double>> points(this -> width() + 1);
 
-	/* points[0] = calc(QString(expr).replace('x', QString::number(minX)));
-	if (points[0]) {
-		m_path -> moveTo(0, points[0].value());
-		m_init = true;
-	} else
-		m_init = false; */
-
 	double minY = std::numeric_limits<double>::max();
 	double maxY = std::numeric_limits<double>::min();
 	size_t gx = 0;
+	auto tokens = Calc::postfixList(getText(m_win -> m_function -> getInputField()));
+	CalcX calc;
+
 	std::ofstream O;
 	O.open("C:/Users/User/Desktop/debug.txt");
 	for (double x = minX; x < maxX; x += dx) {
 		if (abs(x) < __FLT_EPSILON__) // Fix FP precision
 			x = 0;
-		points[gx] = calc(QString(expr).replace('x', QString::number(x)));
+		points[gx] = calc(tokens, x);
 		if (points[gx]) {
 			minY = std::min(points[gx].value(), minY);
 			maxY = std::max(points[gx].value(), maxY);

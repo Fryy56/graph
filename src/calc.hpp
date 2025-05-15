@@ -181,7 +181,7 @@ private:
 	}
 
 public:
-	std::optional<double> operator()(QString const& expression) {
+	std::optional<double> operator()(QString const& expression, bool doThrow = false) {
 		try {
 			QString input = parse(expression);
 			conversion(input);
@@ -252,20 +252,23 @@ public:
 						}
 				}
 			}
-		}
-		catch (int) {
+		} catch (int except) {
 			/*
 				1 - popping from an empty conversion stack
 				2 - popping from an empty stack
 				3 - precedence operator reaching an unsupported character
 				4 - left parenthesis outweighing right parenthesis (paren < 0)
 				5 - right parenthesis outweighing left parenthesis (paren != 0 in the end)
-				6 - faulty FP number format (disabled)
+				//6 - faulty FP number format (disabled)
 				7 - division by 0
 				8 - square root of a negative
 				9 - log of a negative
-				10 - invalid character conversion
+				10 - invalid stod conversion (likely a forbidden character)
 			*/
+
+			if (doThrow)
+				throw except;
+
 			return std::nullopt;
 		}
 
@@ -275,4 +278,129 @@ public:
 		Calc calc;
 		return calc(expr);
 	}
+	static QList<QString> postfixList(QString const& expression, bool doThrow = false) {
+		Calc calc;
+		try {
+			QString input = calc.parse(expression);
+			calc.conversion(input);
+		} catch (int except) {
+			if (doThrow)
+				throw except;
+		}
+
+		return calc.postfix;
+	}
+};
+
+class CalcX final {
+public:
+	std::optional<double> operator()(QList<QString> const& postfix, double x, bool doThrow = false) {
+		try {
+			for (auto i : postfix) { //! Depends on the OG function
+				double num1;
+				double num2;
+
+				switch (i[0].toLatin1()) {
+					case '+':
+						num2 = pop();
+						num1 = pop();
+						push(num1 + num2);
+						break;
+					case '-':
+						num2 = pop();
+						num1 = pop();
+						push(num1 - num2);
+						break;
+					case '*':
+						num2 = pop();
+						num1 = pop();
+						push(num1 * num2);
+						break;
+					case '/':
+						num2 = pop();
+						num1 = pop();
+						if (num2 != 0) // Handle division by 0
+							push(num1 / num2);
+						else
+							throw(7);
+						break;
+					case '^':
+						num2 = pop();
+						num1 = pop();
+						push(pow(num1, num2));
+						break;
+					case 's':
+						push(sin(pop()));
+						break;
+					case 'c':
+						push(cos(pop()));
+						break;
+					case 't':
+						push(tan(pop()));
+						break;
+					case 'r':
+						num1 = pop();
+						if (num1 >= 0) // Handle imaginary roots (we're keeping it real :speaking_head: :fire:)
+							push(sqrt(num1));
+						else
+							throw(8);
+						break;
+					case 'l':
+						num1 = pop();
+						if (num1 >= 0) // Handle negative values, how am I supposed to know this wth
+							push(log(num1));
+						else
+							throw(9);
+						break;
+					case 'x':
+						if (i.size() == 1)
+							push(x);
+						else
+							throw(11);
+						break;
+
+					default:
+						try {
+							push(stod(i.toStdString()));
+						} catch (...) {
+							throw(10);
+						}
+				}
+			}
+		} catch (int except) {
+			// 11 - token starting with `x` is longer than 1 character
+
+			if (doThrow)
+				throw except;
+
+			return std::nullopt;
+		}
+
+		return pop();
+	}
+
+private:
+	struct Stack {
+		double contents;
+		Stack* next;
+	};
+
+	void push(double a) {
+		Stack* new_st = (Stack*)malloc(sizeof(Stack));
+		new_st -> contents = a;
+		new_st -> next = st;
+		st = new_st;
+	}
+
+	double pop() {
+		if (st == nullptr)
+			throw(2);
+		double output = st -> contents;
+		Stack* temp_ptr = st -> next;
+		free(st);
+		st = temp_ptr;
+		return output;
+	}
+
+	Stack* st = nullptr;
 };
