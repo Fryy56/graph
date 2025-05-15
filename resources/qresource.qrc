@@ -2,5 +2,6 @@
     <qresource>
         <file>icons/reset.png</file>
         <file>icons/plot.png</file>
+        <file>icons/sincerefire.png</file>
     </qresource>
 </RCC>
