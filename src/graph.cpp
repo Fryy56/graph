@@ -25,14 +25,16 @@ void Graph::build() {
 
 	QList<std::optional<double>> points(this -> width() + 1);
 
+	m_init = false;
 	double minY = std::numeric_limits<double>::max();
-	double maxY = std::numeric_limits<double>::min();
+	double maxY = -std::numeric_limits<double>::max();
 	size_t gx = 0;
 	auto tokens = Calc::postfixList(getText(m_win -> m_function -> getInputField()));
 	CalcX calc;
 
 	std::ofstream O;
 	O.open("C:/Users/User/Desktop/debug.txt");
+	O << "-------------------- Preinit -------------------------\n";
 	for (double x = minX; x < maxX; x += dx) {
 		if (abs(x) < __FLT_EPSILON__) // Fix FP precision
 			x = 0;
@@ -40,28 +42,36 @@ void Graph::build() {
 		if (points[gx]) {
 			minY = std::min(points[gx].value(), minY);
 			maxY = std::max(points[gx].value(), maxY);
-			O << "y: " << points[gx].value() << ", minY: " << minY << ", maxY: " << maxY << '\n';
+			O << gx << " | x: " << x << ", y: " << points[gx].value() << ", minY: " << minY << ", maxY: " << maxY << '\n';
 		}
 		++gx;
 	}
 
+	if (abs(maxY - minY) < __FLT_EPSILON__) {
+		minY -= 5;
+		maxY += 5;
+	}
 	double k = double(this -> height()) / (maxY - minY);
 	gx = 0;
 	O << "minY: " << minY << ", maxY: " << maxY << ", h: " << this -> height() << ", k: " << k << '\n';
 	for (auto y : points) {
-		if (y.value()) {
+		if (y) {
 			O << "gx: " << gx << ", gy: " << k * (maxY - y.value()) << '\n';
 			if (m_init) { // y has a value and this is not the first point
 				m_path -> lineTo(gx, k * (maxY - y.value()));
 			} else { // y has a value and this is the first point
 				m_init = true;
-				m_path -> moveTo(gx, k * (maxX - y.value()));
+				m_path -> moveTo(gx, k * (maxY - y.value()));
 			}
 		} else { // y is std::nullopt
 			m_path -> moveTo(gx, -1);
 		}
 		++gx;
 	}
+
+	O << "bwaaa\n";
+	for (size_t i = 0; i < 10; ++i)
+		O << m_path -> elementAt(i).x << " " << m_path -> elementAt(i).y << '\n';
 
 	this -> update();
 

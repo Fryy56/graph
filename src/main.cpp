@@ -26,6 +26,13 @@ int main(int argc, char* argv[]) {
 				QString("An exception has occurred:\n%1").arg(exceptRet.what())
 			);
 			return 1;
+		} catch (int except) {
+			QMessageBox::critical(
+				nullptr,
+				"Error",
+				QString(QString("Debug throw: %1").arg(except))
+			);
+			return 1;
 		} catch (...) {
 			QMessageBox::critical(
 				nullptr,

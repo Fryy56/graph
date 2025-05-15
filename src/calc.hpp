@@ -134,11 +134,11 @@ private:
 			else { // If it's an operator
 				// Add what number we have
 				if (cur_num != "") {
-					/* unsigned short pointCount = 0;
+					unsigned short pointCount = 0;
 					for (auto i : cur_num)
 						pointCount += (i == '.');
 					if (cur_num[0] == '.' || cur_num[cur_num.size() - 1] == '.' || pointCount > 1)
-						throw(6); */
+						throw(6);
 					postfix.push_back(cur_num);
 					cur_num = "";
 				}
@@ -168,11 +168,11 @@ private:
 
 		// Add what we have (again)
 		if (cur_num != "") {
-			/* unsigned short pointCount = 0;
+			unsigned short pointCount = 0;
 			for (auto i : cur_num)
 				pointCount += (i == '.');
 			if (cur_num[0] == '.' || cur_num[cur_num.size() - 1] == '.' || pointCount > 1)
-				throw(6); */
+				throw(6);
 			postfix.push_back(cur_num);
 		}
 		// Clear the conversion stack (finalize the conversion)
@@ -259,7 +259,7 @@ public:
 				3 - precedence operator reaching an unsupported character
 				4 - left parenthesis outweighing right parenthesis (paren < 0)
 				5 - right parenthesis outweighing left parenthesis (paren != 0 in the end)
-				//6 - faulty FP number format (disabled)
+				6 - faulty FP number format
 				7 - division by 0
 				8 - square root of a negative
 				9 - log of a negative
