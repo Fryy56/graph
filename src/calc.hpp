@@ -7,6 +7,32 @@
 
 
 class Calc final {
+public:
+	/*
+		1 - popping from an empty conversion stack
+		2 - popping from an empty stack
+		3 - precedence operator reaching an unsupported character
+		4 - left parenthesis outweighing right parenthesis (paren < 0)
+		5 - right parenthesis outweighing left parenthesis (paren != 0 in the end)
+		6 - faulty FP number format
+		7 - division by 0
+		8 - square root of a negative
+		9 - log of a negative
+		10 - invalid stod conversion (likely a forbidden character)
+	*/
+	enum class Except { //! Sync with `CalcX`
+		NullConvPop = 1,
+		NullPop = 2,
+		PrecFail = 3,
+		LeftParenFail = 4,
+		RightParenFail = 5,
+		FPFail = 6,
+		DivBy0 = 7,
+		NegativeSqrt = 8,
+		NegativeLog = 9,
+		StodFail = 10,
+		FailedXParse = 11
+	};
 private:
 	// Custom structures declarations
 	struct Stack {
@@ -34,7 +60,7 @@ private:
 
 	QChar conv_pop() { // No dependencies
 		if (conv_st == nullptr)
-			throw(1);
+			throw(Except::NullConvPop);
 		QChar output = conv_st -> contents;
 		Conv_Stack* temp_ptr = conv_st -> next;
 		free(conv_st);
@@ -51,7 +77,7 @@ private:
 
 	double pop() { // No dependencies
 		if (st == nullptr)
-			throw(2);
+			throw(Except::NullPop);
 		double output = st -> contents;
 		Stack* temp_ptr = st -> next;
 		free(st);
@@ -82,7 +108,7 @@ private:
 				precedence = 3;
 				break;
 			default:
-				throw(3);
+				throw(Except::PrecFail);
 		}
 
 		return precedence;
@@ -110,10 +136,10 @@ private:
 				paren--;
 			
 			if (paren < 0)
-				throw(4);
+				throw(Except::LeftParenFail);
 		}
 		if (paren != 0)
-			throw(5);
+			throw(Except::RightParenFail);
 
 		// Replace multicharacter operators with single character ones
 		parsed_input.replace("sin", "s"); // Sine
@@ -138,7 +164,7 @@ private:
 					for (auto i : cur_num)
 						pointCount += (i == '.');
 					if (cur_num[0] == '.' || cur_num[cur_num.size() - 1] == '.' || pointCount > 1)
-						throw(6);
+						throw(Except::FPFail);
 					postfix.push_back(cur_num);
 					cur_num = "";
 				}
@@ -172,7 +198,7 @@ private:
 			for (auto i : cur_num)
 				pointCount += (i == '.');
 			if (cur_num[0] == '.' || cur_num[cur_num.size() - 1] == '.' || pointCount > 1)
-				throw(6);
+				throw(Except::FPFail);
 			postfix.push_back(cur_num);
 		}
 		// Clear the conversion stack (finalize the conversion)
@@ -213,7 +239,7 @@ public:
 						if (num2 != 0) // Handle division by 0
 							push(num1 / num2);
 						else
-							throw(7);
+							throw(Except::DivBy0);
 						break;
 					case '^':
 						num2 = pop();
@@ -234,38 +260,25 @@ public:
 						if (num1 >= 0) // Handle imaginary roots (we're keeping it real :speaking_head: :fire:)
 							push(sqrt(num1));
 						else
-							throw(8);
+							throw(Except::NegativeSqrt);
 						break;
 					case 'l':
 						num1 = pop();
 						if (num1 >= 0) // Handle negative values, how am I supposed to know this wth
 							push(log(num1));
 						else
-							throw(9);
+							throw(Except::NegativeLog);
 						break;
 
 					default:
 						try {
 							push(stod(i.toStdString()));
 						} catch (...) {
-							throw(10);
+							throw(Except::StodFail);
 						}
 				}
 			}
-		} catch (int except) {
-			/*
-				1 - popping from an empty conversion stack
-				2 - popping from an empty stack
-				3 - precedence operator reaching an unsupported character
-				4 - left parenthesis outweighing right parenthesis (paren < 0)
-				5 - right parenthesis outweighing left parenthesis (paren != 0 in the end)
-				6 - faulty FP number format
-				7 - division by 0
-				8 - square root of a negative
-				9 - log of a negative
-				10 - invalid stod conversion (likely a forbidden character)
-			*/
-
+		} catch (Except except) {
 			if (doThrow)
 				throw except;
 
@@ -283,7 +296,7 @@ public:
 		try {
 			QString input = calc.parse(expression);
 			calc.conversion(input);
-		} catch (int except) {
+		} catch (Except except) {
 			if (doThrow)
 				throw except;
 		}
@@ -294,6 +307,19 @@ public:
 
 class CalcX final {
 public:
+	enum class Except {
+		NullConvPop = 1,
+		NullPop = 2,
+		PrecFail = 3,
+		LeftParenFail = 4,
+		RightParenFail = 5,
+		FPFail = 6,
+		DivBy0 = 7,
+		NegativeSqrt = 8,
+		NegativeLog = 9,
+		StodFail = 10,
+		FailedXParse = 11
+	};
 	std::optional<double> operator()(QList<QString> const& postfix, double x, bool doThrow = false) {
 		try {
 			for (auto i : postfix) { //! Depends on the OG function
@@ -322,7 +348,7 @@ public:
 						if (num2 != 0) // Handle division by 0
 							push(num1 / num2);
 						else
-							throw(7);
+							throw(Except::DivBy0);
 						break;
 					case '^':
 						num2 = pop();
@@ -343,31 +369,31 @@ public:
 						if (num1 >= 0) // Handle imaginary roots (we're keeping it real :speaking_head: :fire:)
 							push(sqrt(num1));
 						else
-							throw(8);
+							throw(Except::NegativeSqrt);
 						break;
 					case 'l':
 						num1 = pop();
 						if (num1 >= 0) // Handle negative values, how am I supposed to know this wth
 							push(log(num1));
 						else
-							throw(9);
+							throw(Except::NegativeLog);
 						break;
 					case 'x':
 						if (i.size() == 1)
 							push(x);
 						else
-							throw(11);
+							throw(Except::FailedXParse);
 						break;
 
 					default:
 						try {
 							push(stod(i.toStdString()));
 						} catch (...) {
-							throw(10);
+							throw(Except::StodFail);
 						}
 				}
 			}
-		} catch (int except) {
+		} catch (Except except) {
 			// 11 - token starting with `x` is longer than 1 character
 
 			if (doThrow)
@@ -394,7 +420,7 @@ private:
 
 	double pop() {
 		if (st == nullptr)
-			throw(2);
+			throw(Except::NullPop);
 		double output = st -> contents;
 		Stack* temp_ptr = st -> next;
 		free(st);
