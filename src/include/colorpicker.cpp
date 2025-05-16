@@ -21,7 +21,7 @@ ColorPicker::ColorPicker(
 	m_editLabel = new QLabel("Edit");
 	QFont font(this -> font());
 	font.setBold(true);
-	font.setPointSize(13);
+	font.setPointSize(12);
 	m_editLabel -> setFont(font);
 	QPalette pal;
 	pal.setColor(QPalette::WindowText, Qt::white);
