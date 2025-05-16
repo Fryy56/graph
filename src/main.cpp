@@ -12,6 +12,8 @@ int main(int argc, char* argv[]) {
 	a.setStyleSheet(style_QToolTip);
 	a.setFont(QFont("Lucida Sans Unicode", 10));
 
+	w.setWindowIcon(QIcon(":/icon.png"));
+
 	try {
 		w.show();
 		return a.exec();

@@ -23,6 +23,9 @@ ColorPicker::ColorPicker(
 	font.setBold(true);
 	font.setPointSize(13);
 	m_editLabel -> setFont(font);
+	QPalette pal;
+	pal.setColor(QPalette::WindowText, Qt::white);
+	m_editLabel -> setPalette(pal);
 	m_editLabel -> setMaximumWidth(40);
 	m_editLabel -> setAttribute(Qt::WA_TranslucentBackground);
 	m_editLayout -> addWidget(m_editLabel);
