@@ -13,17 +13,21 @@ static QString getText(QLineEdit* inputField) {
 }
 
 Graph::Graph(MainWindow* win, QWidget* parent) : QWidget(parent), m_win(win) {
-	m_path = new QPainterPath;
+	m_graphPath = new QPainterPath;
 }
 #include <fstream>
 void Graph::build() {
-	m_path -> clear();
+	delete m_graphPath;
+	m_graphPath = new QPainterPath;
 
 	int minX = getText(m_win -> m_limitMin -> getInputField()).toInt();
 	int maxX = getText(m_win -> m_limitMax -> getInputField()).toInt();
 	double dx = double(maxX - minX) / this -> width();
 
-	QList<std::optional<double>> points(this -> width() + 1);
+	QList<std::optional<double>> points;
+	points.reserve(this -> width() + 1);
+	for (int i = 0; i < this -> width() + 1; ++i)
+		points.append(std::nullopt);
 
 	m_init = false;
 	double minY = std::numeric_limits<double>::max();
@@ -58,20 +62,22 @@ void Graph::build() {
 		if (y) {
 			O << "gx: " << gx << ", gy: " << k * (maxY - y.value()) << '\n';
 			if (m_init) { // y has a value and this is not the first point
-				m_path -> lineTo(gx, k * (maxY - y.value()));
+				m_graphPath -> lineTo(gx, k * (maxY - y.value()));
 			} else { // y has a value and this is the first point
 				m_init = true;
-				m_path -> moveTo(gx, k * (maxY - y.value()));
+				m_graphPath -> moveTo(gx, k * (maxY - y.value()));
 			}
 		} else { // y is std::nullopt
-			m_path -> moveTo(gx, -1);
+			m_graphPath -> moveTo(gx, -1);
 		}
 		++gx;
 	}
 
 	O << "bwaaa\n";
 	for (size_t i = 0; i < 10; ++i)
-		O << m_path -> elementAt(i).x << " " << m_path -> elementAt(i).y << '\n';
+		O << m_graphPath -> elementAt(i).x << " " << m_graphPath -> elementAt(i).y << '\n';
+
+	m_ogPathRect = m_graphPath -> boundingRect();
 
 	this -> update();
 
@@ -84,11 +90,13 @@ void Graph::paintEvent(QPaintEvent*) {
 	QPen pen(m_win -> SettingsValues.graphLineColor);
 	pen.setWidth(4);
 	painter.setPen(pen);
-	painter.drawPath(*m_path);
+
+	m_graphPath -> // add transform pls also try `1/(x-5)` cuz it shows const idk
+	painter.drawPath(*m_graphPath);
 
 	return;
 }
 
 Graph::~Graph() {
-	delete m_path;
+	delete m_graphPath;
 }

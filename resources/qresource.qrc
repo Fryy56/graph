@@ -3,5 +3,7 @@
         <file>icons/reset.png</file>
         <file>icons/plot.png</file>
         <file>icons/sincerefire.png</file>
+
+        <file>icon.png</file>
     </qresource>
 </RCC>

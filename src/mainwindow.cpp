@@ -95,7 +95,10 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 			font: 15pt;
 		}
 	)");
-	m_function -> setFieldStyleSheetSafe("border-radius: 5px;");
+	m_function -> setFieldStyleSheetSafe(QString(R"(
+		border-radius: 5px;
+		background-color: %1;
+	)").arg(Colors.Fields.name()));
 	m_function -> heightViaLabel(25);
 	m_function -> setFieldMaxLength(255);
 	m_function -> setFieldToolTip("Enter a function relative to <b>x</b>.");

@@ -19,6 +19,8 @@ protected:
 
 	// Fields
 	MainWindow* m_win;
-	QPainterPath* m_path;
+	QPainterPath* m_graphPath;
+	QRect m_ogPathRect;
+	QPainterPath* m_axesPath;
 	bool m_init;
 };
