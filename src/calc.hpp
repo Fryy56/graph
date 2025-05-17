@@ -155,16 +155,20 @@ private:
 	void conversion(QString const& input) { // 1 dependency - prec
 		QString cur_num;
 		for (auto cur_char : input)
-			if (('0' <= cur_char && cur_char <= '9') || cur_char == '.') // If it's an operand
+			if (('0' <= cur_char && cur_char <= '9') || cur_char == '.' || cur_char == 'x') // If it's an operand
 				cur_num += cur_char;
 			else { // If it's an operator
 				// Add what number we have
 				if (cur_num != "") {
 					unsigned short pointCount = 0;
-					for (auto i : cur_num)
-						pointCount += (i == '.');
-					if (cur_num[0] == '.' || cur_num[cur_num.size() - 1] == '.' || pointCount > 1)
-						throw(Except::FPFail);
+
+					if (cur_num != "x") {
+						for (auto i : cur_num)
+							pointCount += (i == '.');
+						if (cur_num[0] == '.' || cur_num[cur_num.size() - 1] == '.' || pointCount > 1)
+							throw(Except::FPFail);
+					}
+
 					postfix.push_back(cur_num);
 					cur_num = "";
 				}
