@@ -30,8 +30,6 @@ void Graph::build() {
 		points.append(std::nullopt);
 
 	m_init = false;
-	double minY = std::numeric_limits<double>::max();
-	double maxY = -std::numeric_limits<double>::max();
 	size_t gx = 0;
 	auto tokens = Calc::postfixList(getText(m_win -> m_function -> getInputField()));
 	CalcX calc;
@@ -39,33 +37,30 @@ void Graph::build() {
 	std::ofstream O;
 	O.open("C:/Users/User/Desktop/debug.txt");
 	O << "-------------------- Preinit -------------------------\n";
+	O << "Tokens:\n";
+	for (auto i : tokens)
+		O << i.toStdString() << '\n';
+	O << "------------------------------------------------------\n";
 	for (double x = minX; x < maxX; x += dx) {
 		if (abs(x) < __FLT_EPSILON__) // Fix FP precision
 			x = 0;
 		points[gx] = calc(tokens, x);
 		if (points[gx]) {
-			minY = std::min(points[gx].value(), minY);
-			maxY = std::max(points[gx].value(), maxY);
-			O << gx << " | x: " << x << ", y: " << points[gx].value() << ", minY: " << minY << ", maxY: " << maxY << '\n';
+			O << gx << " | x: " << x << ", y: " << points[gx].value() << '\n';
 		}
 		++gx;
 	}
 
-	if (abs(maxY - minY) < __FLT_EPSILON__) {
-		minY -= 5;
-		maxY += 5;
-	}
-	double k = double(this -> height()) / (maxY - minY);
 	gx = 0;
-	O << "minY: " << minY << ", maxY: " << maxY << ", h: " << this -> height() << ", k: " << k << '\n';
+	int y0 = this -> height() / 2;
 	for (auto y : points) {
 		if (y) {
-			O << "gx: " << gx << ", gy: " << k * (maxY - y.value()) << '\n';
+			O << "gx: " << gx << ", gy: " << y.value() << '\n';
 			if (m_init) { // y has a value and this is not the first point
-				m_graphPath -> lineTo(gx, k * (maxY - y.value()));
+				m_graphPath -> lineTo(gx, y0 - y.value());
 			} else { // y has a value and this is the first point
 				m_init = true;
-				m_graphPath -> moveTo(gx, k * (maxY - y.value()));
+				m_graphPath -> moveTo(gx, y0 - y.value());
 			}
 		} else { // y is std::nullopt
 			m_graphPath -> moveTo(gx, -1);
@@ -91,7 +86,6 @@ void Graph::paintEvent(QPaintEvent*) {
 	pen.setWidth(4);
 	painter.setPen(pen);
 
-	m_graphPath -> // add transform pls also try `1/(x-5)` cuz it shows const idk
 	painter.drawPath(*m_graphPath);
 
 	return;

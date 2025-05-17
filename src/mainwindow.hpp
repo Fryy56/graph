@@ -6,6 +6,7 @@
 #include <QLineEdit>
 #include <QRegularExpressionValidator>
 #include <QSettings>
+#include <QGraphicsView>
 #include "graph.hpp"
 #include "include/highlightedlineedit.hpp"
 #include "include/separator.hpp"
@@ -63,7 +64,9 @@ private:
 	// Objecttree (m_centralWidget)
 		QHBoxLayout* m_mainLayout;
 			QVBoxLayout* m_graphLayout;
-				Graph* m_graph;
+				QGraphicsView* m_graphView;
+					QGraphicsScene* m_graphScene;
+						Graph* m_graph;
 				HighlightedLineEdit* m_function;
 			QVBoxLayout* m_buttonLayout;
 				QWidget* m_buttonBG;

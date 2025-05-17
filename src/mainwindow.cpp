@@ -81,9 +81,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 			border-radius: 20px;
 			background-color: %1;
 	)").arg(Colors.Fields.name()));
-	m_graph -> setMinimumSize(700, 500);
+	m_graph -> setFixedHeight(999999999);
 	m_graph -> setAutoFillBackground(true);
-	m_graphLayout -> addWidget(m_graph);
+	m_graphScene = new QGraphicsScene;
+	m_graphScene -> addWidget(m_graph);
+	m_graphView = new QGraphicsView(m_graphScene);
+	m_graphView -> setMinimumSize(700, 500);
+	m_graphLayout -> addWidget(m_graphView);
+	m_graphView -> show();
 
 	// Spacing
 	m_graphLayout -> addSpacing(15);
