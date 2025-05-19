@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <qsystemdetection.h>
 #include "mainwindow.hpp"
 #include <QMessageBox>
 #include "styles.hpp"
@@ -12,7 +13,9 @@ int main(int argc, char* argv[]) {
 	a.setStyleSheet(style_QToolTip);
 	a.setFont(QFont("Lucida Sans Unicode", 10));
 
-	w.setWindowIcon(QIcon(":/icon.png"));
+	#ifndef Q_OS_WINDOWS
+		w.setWindowIcon(QIcon(":/icon.png"));
+	#endif
 
 	try {
 		w.show();
