@@ -39,7 +39,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 
 
 	// Extras setup
-	QRegularExpression intRegEx("^(-??[1-9]\\d{0,9})|(0)$");
+	QRegularExpression intRegEx("^(-??[1-9]\\d{0,5})|(0)$");
 	m_intRegExVal = new QRegularExpressionValidator(intRegEx);
 	auto pushButtonStyleSheet = QString(R"(
 		QPushButton {
@@ -78,15 +78,26 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 	// Graph
 	m_graph = new Graph(this);
 	m_graph -> setStyleSheet(QString(R"(
-			border-radius: 20px;
+		QWidget {
 			background-color: %1;
+		}
 	)").arg(Colors.Fields.name()));
-	m_graph -> setFixedHeight(999999999);
+	m_graph -> setFixedHeight(2'000);
 	m_graph -> setAutoFillBackground(true);
 	m_graphScene = new QGraphicsScene;
-	m_graphScene -> addWidget(m_graph);
-	m_graphView = new QGraphicsView(m_graphScene);
+	m_graphProxy = m_graphScene -> addWidget(m_graph);
+	m_graphView = new GraphView(m_graphScene);
 	m_graphView -> setMinimumSize(700, 500);
+	m_graphView -> setStyleSheet(R"(
+		border-radius: 20px;
+		background-color: white;
+	)");
+	connect(
+		m_graphView,
+		GraphView::widthUpdated,
+		m_graph,
+		Graph::updateWidth
+	);
 	m_graphLayout -> addWidget(m_graphView);
 	m_graphView -> show();
 

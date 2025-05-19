@@ -14,6 +14,7 @@
 
 
 class Graph;
+class GraphView;
 
 class MainWindow : public QMainWindow {
 	Q_OBJECT
@@ -64,9 +65,10 @@ private:
 	// Objecttree (m_centralWidget)
 		QHBoxLayout* m_mainLayout;
 			QVBoxLayout* m_graphLayout;
-				QGraphicsView* m_graphView;
+				GraphView* m_graphView;
 					QGraphicsScene* m_graphScene;
-						Graph* m_graph;
+						QGraphicsProxyWidget* m_graphProxy;
+							Graph* m_graph;
 				HighlightedLineEdit* m_function;
 			QVBoxLayout* m_buttonLayout;
 				QWidget* m_buttonBG;

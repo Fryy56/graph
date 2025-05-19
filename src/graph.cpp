@@ -15,10 +15,15 @@ static QString getText(QLineEdit* inputField) {
 Graph::Graph(MainWindow* win, QWidget* parent) : QWidget(parent), m_win(win) {
 	m_graphPath = new QPainterPath;
 }
+
+void Graph::updateWidth(int newWidth) {
+	this -> setFixedWidth(newWidth);
+
+	return;
+}
 #include <fstream>
 void Graph::build() {
-	delete m_graphPath;
-	m_graphPath = new QPainterPath;
+	m_graphPath -> clear();
 
 	int minX = getText(m_win -> m_limitMin -> getInputField()).toInt();
 	int maxX = getText(m_win -> m_limitMax -> getInputField()).toInt();
@@ -72,8 +77,6 @@ void Graph::build() {
 	for (size_t i = 0; i < 10; ++i)
 		O << m_graphPath -> elementAt(i).x << " " << m_graphPath -> elementAt(i).y << '\n';
 
-	m_ogPathRect = m_graphPath -> boundingRect();
-
 	this -> update();
 
 	return;
@@ -93,4 +96,14 @@ void Graph::paintEvent(QPaintEvent*) {
 
 Graph::~Graph() {
 	delete m_graphPath;
+}
+
+// ---------------------------------------------------------------------------
+
+GraphView::GraphView(QGraphicsScene* scene, QWidget* parent) : QGraphicsView(scene, parent) {}
+
+void GraphView::resizeEvent(QResizeEvent*) {
+	emit widthUpdated(this -> width());
+
+	return;
 }
