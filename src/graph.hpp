@@ -33,11 +33,11 @@ class GraphView : public QGraphicsView {
 	Q_OBJECT
 
 public:
-	explicit GraphView(QGraphicsScene* scene, QWidget* parent = nullptr);
+	explicit GraphView(QGraphicsScene* scene, QWidget* parent = nullptr) : QGraphicsView(scene, parent) {}
 	~GraphView() override {}
 
 protected:
-	void resizeEvent(QResizeEvent*) override;
+	void resizeEvent(QResizeEvent*) override { emit widthUpdated(this -> viewport() -> width()); }
 
 signals:
 	void widthUpdated(int width);

@@ -17,13 +17,33 @@ public:
 	explicit HighlightedLineEdit(QString const& labelText, QString const& placeholderText, QWidget* parent= nullptr);
 	~HighlightedLineEdit() override;
 
-	static void setColors(
-		QColor const& offLabelColor = Colors.offLabelColor,
-		QColor const& onLabelColor = Colors.onLabelColor,
-		QColor const& fieldsColor = Colors.fieldsColor,
-		QColor const& textColor = Colors.textColor,
-		QColor const& borderColor = Colors.borderColor
+	enum class ColorRoles {
+		OffLabelColor = 0,
+		OnLabelColor = 1,
+		FieldsColor = 2,
+		TextColor = 3,
+		BorderColor = 4
+	};
+	static void setPresetColors(
+		QColor const& offLabelColor,
+		QColor const& onLabelColor,
+		QColor const& fieldsColor,
+		QColor const& textColor,
+		QColor const& borderColor
 	);
+	static void setPresetColors(QColor const& color, ColorRoles role);
+	void setColors(
+		QColor const& offLabelColor = PresetColors.offLabelColor,
+		QColor const& onLabelColor = PresetColors.onLabelColor,
+		QColor const& fieldsColor = PresetColors.fieldsColor,
+		QColor const& textColor = PresetColors.textColor,
+		QColor const& borderColor = PresetColors.borderColor
+	);
+	void setColors(QColor const& color, ColorRoles role);
+
+	void pulse(QColor const& pulseColor);
+	void onSelect() { m_onBorderAnim -> start(); }
+	void onDeselect() { m_offBorderAnim -> start(); }
 
 	// Getters (and technically setters)
 	QVBoxLayout* getMainLayout() const { return m_mainLayout; }
@@ -58,9 +78,17 @@ protected:
 		QColor fieldsColor;
 		QColor textColor;
 		QColor borderColor;
+	} PresetColors;
+	struct {
+		QColor offLabelColor;
+		QColor onLabelColor;
+		QColor fieldsColor;
+		QColor textColor;
+		QColor borderColor;
 	} Colors;
-public: // Funny getter
-	static decltype(Colors) getColors() { return Colors; }
+public: // Funny getters
+	static decltype(PresetColors) getPresetColors() { return PresetColors; }
+	decltype(Colors) getColors() const { return Colors; }
 protected:
 
 	QVBoxLayout* m_mainLayout;
@@ -72,8 +100,10 @@ protected:
 	// Objecttree (m_mainLayout)
 
 	QPropertyAnimation* m_clearPulse;
+	QPropertyAnimation* m_genericPulse;
+	QPropertyAnimation* m_onBorderAnim;
+	QPropertyAnimation* m_offBorderAnim;
 
 public slots:
 	void clearWithPulse();
-	void pulse();
 };

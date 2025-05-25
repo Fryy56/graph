@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 		this -> showMaximized();
 
 	// Colors setup
-	HighlightedLineEdit::setColors(Qt::darkGray, Qt::white, Colors.Fields, Qt::white, {100, 100, 100});
+	HighlightedLineEdit::setPresetColors(Qt::darkGray, Qt::white, Colors.Fields, Qt::white, {100, 100, 100});
 	auto pal = QPalette();
 	pal.setColor(QPalette::Window, Colors.BG);
 
@@ -86,6 +86,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 	m_graph -> setAutoFillBackground(true);
 	m_graphScene = new QGraphicsScene;
 	m_graphProxy = m_graphScene -> addWidget(m_graph);
+	m_graphProxy -> setPos(0.f, 0.f);
 	m_graphView = new GraphView(m_graphScene);
 	m_graphView -> setMinimumSize(700, 500);
 	m_graphView -> setStyleSheet(R"(
@@ -113,8 +114,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 	)");
 	m_function -> setFieldStyleSheetSafe(QString(R"(
 		border-radius: 5px;
-		background-color: %1;
-	)").arg(Colors.Fields.name()));
+	)"));
 	m_function -> heightViaLabel(25);
 	m_function -> setFieldMaxLength(255);
 	m_function -> setFieldToolTip("Enter a function relative to <b>x</b>.");
@@ -124,12 +124,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 	// ------------------------------ Button layout ------------------------------
 	// Background
 	m_buttonBG = new QWidget;
+	auto buttonBGColor = QColor(Colors.BG.red() + 10, Colors.BG.green() + 10, Colors.BG.blue() + 10);
 	m_buttonBG -> setStyleSheet(QString(R"(
 		QWidget {
 			border-radius: 10px;
-			background-color: rgb(%1, %2, %3);
+			background-color: %1;
 		}
-	)").arg(Colors.BG.red() + 10).arg(Colors.BG.green() + 10).arg(Colors.BG.blue() + 10));
+	)").arg(buttonBGColor.name()));
 	m_optionsLayout = new QVBoxLayout(m_buttonBG);
 
 	// Header
@@ -151,6 +152,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 	m_optionsSeparator -> setColor(Qt::darkGray);
 	m_optionsLayout -> addWidget(m_optionsSeparator);
 
+	HighlightedLineEdit::setPresetColors(buttonBGColor, HighlightedLineEdit::ColorRoles::FieldsColor);
 	// X min limit input field
 	m_limitsLayout = new QHBoxLayout;
 	m_limitMin = new HighlightedLineEdit("Min <b>x</b>", "-10");
@@ -205,7 +207,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 	// Color picker
 	m_graphColorPicker = new ColorPicker(
 		SettingsValues.graphLineColor,
-		HighlightedLineEdit::getColors().borderColor
+		HighlightedLineEdit::getPresetColors().borderColor
 	);
 	m_graphColorPicker -> setFixedHeight(30);
 	m_optionsLayout -> addWidget(m_graphColorPicker);
@@ -237,8 +239,8 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 	connect(
 		m_plotGraphButton,
 		QPushButton::clicked,
-		m_function,
-		HighlightedLineEdit::pulse
+		this,
+		MainWindow::onPlot
 	);
 	m_buttonLayout -> addWidget(m_plotGraphButton);
 
@@ -285,6 +287,12 @@ void MainWindow::writeSettings() {
 	m_settings -> setValue("graphLineColor", SettingsValues.graphLineColor);
 
 	m_settings -> sync();
+	return;
+}
+
+void MainWindow::onPlot() {
+	m_function -> pulse(Qt::darkGreen);
+
 	return;
 }
 

@@ -2,6 +2,9 @@
 
 
 TintingLabel::TintingLabel(QWidget* parent) : QLabel(parent) {
+	this -> setColors();
+
+	// Animations
 	m_toOnAnim = new QPropertyAnimation(this, "color");
 	m_toOnAnim -> setDuration(400);
 	m_toOnAnim -> setStartValue(QColor(Colors.offColor));
@@ -19,9 +22,48 @@ TintingLabel::TintingLabel(QString const& text, QWidget* parent) : TintingLabel(
 	this -> setText(text);
 }
 
+void TintingLabel::setPresetColors(QColor const& offColor, QColor const& onColor) {
+	PresetColors.offColor = offColor;
+	PresetColors.onColor = onColor;
+
+	return;
+}
+
+void TintingLabel::setPresetColors(QColor const& color, TintingLabel::ColorRoles role) {
+	switch (role) {
+		case TintingLabel::ColorRoles::OffColor:
+			PresetColors.offColor = color;
+			break;
+		case TintingLabel::ColorRoles::OnColor:
+			PresetColors.onColor = color;
+			break;
+		default:
+			Q_UNREACHABLE();
+			break;
+	}
+
+	return;
+}
+
 void TintingLabel::setColors(QColor const& offColor, QColor const& onColor) {
 	Colors.offColor = offColor;
 	Colors.onColor = onColor;
+
+	return;
+}
+
+void TintingLabel::setColors(QColor const& color, TintingLabel::ColorRoles role) {
+	switch (role) {
+		case TintingLabel::ColorRoles::OffColor:
+			Colors.offColor = color;
+			break;
+		case TintingLabel::ColorRoles::OnColor:
+			Colors.onColor = color;
+			break;
+		default:
+			Q_UNREACHABLE();
+			break;
+	}
 
 	return;
 }

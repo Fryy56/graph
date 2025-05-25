@@ -97,13 +97,3 @@ void Graph::paintEvent(QPaintEvent*) {
 Graph::~Graph() {
 	delete m_graphPath;
 }
-
-// ---------------------------------------------------------------------------
-
-GraphView::GraphView(QGraphicsScene* scene, QWidget* parent) : QGraphicsView(scene, parent) {}
-
-void GraphView::resizeEvent(QResizeEvent*) {
-	emit widthUpdated(this -> width());
-
-	return;
-}

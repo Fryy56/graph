@@ -7,6 +7,7 @@
 #include <QRegularExpressionValidator>
 #include <QSettings>
 #include <QGraphicsView>
+#include <QGraphicsProxyWidget>
 #include "graph.hpp"
 #include "include/highlightedlineedit.hpp"
 #include "include/separator.hpp"
@@ -89,4 +90,5 @@ private:
 	QRegularExpressionValidator* m_intRegExVal;
 
 private slots:
+	void onPlot();
 };
