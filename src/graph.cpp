@@ -4,14 +4,6 @@
 #include <QPainter>
 
 
-static QString getText(QLineEdit* inputField) {
-	auto ret = inputField -> text();
-	if (ret.isEmpty())
-		return inputField -> placeholderText();
-	else
-		return ret;
-}
-
 Graph::Graph(MainWindow* win, QWidget* parent) : QWidget(parent), m_win(win) {
 	m_graphPath = new QPainterPath;
 }
@@ -25,8 +17,8 @@ void Graph::updateWidth(int newWidth) {
 void Graph::build() {
 	m_graphPath -> clear();
 
-	int minX = getText(m_win -> m_limitMin -> getInputField()).toInt();
-	int maxX = getText(m_win -> m_limitMax -> getInputField()).toInt();
+	int minX = m_win -> m_limitMin -> getShownText().toInt();
+	int maxX = m_win -> m_limitMax -> getShownText().toInt();
 	double dx = double(maxX - minX) / this -> width();
 
 	QList<std::optional<double>> points;
@@ -36,7 +28,7 @@ void Graph::build() {
 
 	m_init = false;
 	size_t gx = 0;
-	auto tokens = Calc::postfixList(getText(m_win -> m_function -> getInputField()));
+	auto tokens = Calc::postfixList(m_win -> m_function -> getShownText());
 	CalcX calc;
 
 	std::ofstream O;

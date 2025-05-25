@@ -45,11 +45,12 @@ public:
 	void onSelect() { m_onBorderAnim -> start(); }
 	void onDeselect() { m_offBorderAnim -> start(); }
 
-	// Getters (and technically setters)
+	// Technically getters and technically setters
 	QVBoxLayout* getMainLayout() const { return m_mainLayout; }
 	QHBoxLayout* getLabelLayout() const { return m_labelLayout; }
 	TintingLabel* getLabel() const { return m_label; }
 	QLineEdit* getInputField() const { return m_inputField; }
+	QString getShownText() const;
 	void heightViaLabel(int height);
 	void widthViaField(int width);
 	void setLabelStyleSheet(QString const& text) { m_label -> setStyleSheet(text); }

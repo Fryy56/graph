@@ -46,9 +46,9 @@ HighlightedLineEdit::HighlightedLineEdit(QWidget* parent) : QWidget(parent) {
 	m_genericPulse -> setEasingCurve(QEasingCurve::Linear);
 
 	auto borderFocusColor = QColor(
-		Colors.borderColor.red() + 40,
-		Colors.borderColor.green() + 40,
-		Colors.borderColor.blue() + 40
+		Colors.borderColor.red() + 60,
+		Colors.borderColor.green() + 60,
+		Colors.borderColor.blue() + 60
 	);
 	// On border animation
 	m_onBorderAnim = new QPropertyAnimation(this, "borderColor");
@@ -171,6 +171,14 @@ void HighlightedLineEdit::pulse(QColor const& pulseColor) {
 	m_genericPulse -> start();
 
 	return;
+}
+
+QString HighlightedLineEdit::getShownText() const {
+	auto ret = m_inputField -> text();
+	if (ret.isEmpty())
+		return m_inputField -> placeholderText();
+	else
+		return ret;
 }
 
 void HighlightedLineEdit::heightViaLabel(int height) {
