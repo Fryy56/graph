@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QSplashScreen>
 #include <qsystemdetection.h>
 #include "mainwindow.hpp"
 #include <QMessageBox>
@@ -7,6 +8,8 @@
 
 int main(int argc, char* argv[]) {
 	QApplication a(argc, argv);
+	QSplashScreen loadingScreen(QPixmap(":/icon.png").scaled(200, 200));
+	loadingScreen.show();
 	MainWindow w;
 
 	// Styles setup
@@ -18,6 +21,7 @@ int main(int argc, char* argv[]) {
 	#endif
 
 	try {
+		loadingScreen.finish(&w);
 		w.show();
 		return a.exec();
 	} catch(...) {
