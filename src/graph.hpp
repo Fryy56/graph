@@ -13,6 +13,9 @@ public:
 	explicit Graph(MainWindow* win, QWidget* parent = nullptr);
 	~Graph() override;
 
+	// Setters
+	void setAxesColor(QColor const& color) { m_axesColor = color; }
+
 public slots:
 	void updateWidth(int newWidth);
 	void build();
@@ -24,7 +27,10 @@ protected:
 	MainWindow* m_win;
 	QPainterPath* m_graphPath;
 	QPainterPath* m_axesPath;
+	QColor m_axesColor = Qt::black;
 	bool m_init;
+	int m_gx0;
+	int m_y0;
 };
 
 // ---------------------------------------------------------------------------

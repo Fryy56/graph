@@ -77,6 +77,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 	// ------------------------------ Graph layout ------------------------------
 	// Graph
 	m_graph = new Graph(this);
+	m_graph -> setAxesColor({87, 87, 87});
 	m_graph -> setStyleSheet(QString(R"(
 		QWidget {
 			background-color: %1;
