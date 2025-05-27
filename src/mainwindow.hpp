@@ -88,6 +88,7 @@ private:
 	// Objecttree (m_centralWidget)
 	
 	QRegularExpressionValidator* m_intRegExVal;
+	QRegularExpressionValidator* m_functionRegExVal;
 
 private slots:
 	void onPlot();

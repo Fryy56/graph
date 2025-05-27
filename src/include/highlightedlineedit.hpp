@@ -51,8 +51,8 @@ public:
 	TintingLabel* getLabel() const { return m_label; }
 	QLineEdit* getInputField() const { return m_inputField; }
 	QString getShownText() const;
-	void heightViaLabel(int height);
-	void widthViaField(int width);
+	void setHeightViaLabel(int height);
+	void setWidthViaField(int width);
 	void setLabelStyleSheet(QString const& text) { m_label -> setStyleSheet(text); }
 	void setFieldStyleSheetSafe(QString const& styleSheet); //! USE THIS FOR ALL CHANGES
 	void setFieldToolTip(QString const& text) { m_inputField -> setToolTip(text); };

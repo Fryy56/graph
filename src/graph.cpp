@@ -29,8 +29,13 @@ void Graph::build() {
 
 	m_init = false;
 	size_t gx = 0;
-	double prevGx = -1;
+	double prevX = -1;
+	m_gx0 = -1;
 	auto tokens = Calc::postfixList(m_win -> m_function -> getShownText());
+	if (tokens.size() == 0) { // handle it properly later pls
+		this -> update();
+		return;
+	}
 	CalcX calc;
 
 	std::ofstream O;
@@ -41,29 +46,30 @@ void Graph::build() {
 		O << i.toStdString() << '\n';
 	O << "------------------------------------------------------\n";
 	for (double x = minX; x < maxX; x += dx) {
-		if (prevGx < 0 && 0 < gx)
+		if (prevX <= 0 && 0 <= x)
 			m_gx0 = gx;
 
 		if (abs(x) < __FLT_EPSILON__) // Fix FP precision
 			x = 0;
 		points[gx] = calc(tokens, x);
 		if (points[gx]) {
-			O << gx << " | x: " << x << ", y: " << points[gx].value() << '\n';
+			O << gx << " | x: " << x << ", y: " << points[gx].value() << " gx0: " << m_gx0 << " prevX: " << prevX << '\n';
 		}
-		prevGx = x;
+		prevX = x;
 		++gx;
 	}
 
 	gx = 0;
 	m_y0 = this -> height() / 2;
+	double k = static_cast<double>(this -> width()) / (maxX - minX);
 	for (auto y : points) {
 		if (y) {
-			O << "gx: " << gx << ", gy: " << y.value() << '\n';
+			O << "gx: " << gx << ", gy: " << m_y0 - k * y.value() << '\n';
 			if (m_init) { // y has a value and this is not the first point
-				m_graphPath -> lineTo(gx, m_y0 - y.value());
+				m_graphPath -> lineTo(gx, m_y0 - k * y.value());
 			} else { // y has a value and this is the first point
 				m_init = true;
-				m_graphPath -> moveTo(gx, m_y0 - y.value());
+				m_graphPath -> moveTo(gx, m_y0 - k * y.value());
 			}
 		} else { // y is std::nullopt
 			m_graphPath -> moveTo(gx, -1);
@@ -83,7 +89,7 @@ void Graph::build() {
 void Graph::paintEvent(QPaintEvent*) {
 	QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing);
-	painter.setPen(QPen(m_axesColor, 4));
+	painter.setPen(QPen(m_axesColor, 3));
 
 	m_axesPath -> clear();
 	// x

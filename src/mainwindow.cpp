@@ -40,7 +40,9 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 
 	// Extras setup
 	QRegularExpression intRegEx("^(-??[1-9]\\d{0,5})|(0)$");
+	QRegularExpression functionRegEx("^[^ ]*$");
 	m_intRegExVal = new QRegularExpressionValidator(intRegEx);
+	m_functionRegExVal = new QRegularExpressionValidator(functionRegEx);
 	auto pushButtonStyleSheet = QString(R"(
 		QPushButton {
 			background-color: %1;
@@ -116,10 +118,11 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 	m_function -> setFieldStyleSheetSafe(QString(R"(
 		border-radius: 5px;
 	)"));
-	m_function -> heightViaLabel(25);
+	m_function -> setHeightViaLabel(25);
 	m_function -> setFieldMaxLength(255);
 	m_function -> setFieldToolTip("Enter a function relative to <b>x</b>.");
 	m_function -> setFieldText(SettingsValues.function);
+	m_function -> setFieldValidator(m_functionRegExVal);
 	m_graphLayout -> addWidget(m_function);
 
 	// ------------------------------ Button layout ------------------------------
@@ -158,7 +161,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 	m_limitsLayout = new QHBoxLayout;
 	m_limitMin = new HighlightedLineEdit("Min <b>x</b>", "-10");
 	m_limitMin -> setFieldMaxLength(11);
-	m_limitMin -> widthViaField(130);
+	m_limitMin -> setWidthViaField(130);
 	m_limitMin -> setFieldStyleSheetSafe("border-radius: 5px; font: 11px;");
 	m_limitMin -> setFieldToolTip("Minimum <b>x</b> value to be calculated.");
 	m_limitMin -> setFieldValidator(m_intRegExVal);
@@ -178,7 +181,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 	// X max limit input field
 	m_limitMax = new HighlightedLineEdit("Max <b>x</b>", "10");
 	m_limitMax -> setFieldMaxLength(11);
-	m_limitMax -> widthViaField(130);
+	m_limitMax -> setWidthViaField(130);
 	m_limitMax -> setFieldStyleSheetSafe("border-radius: 5px; font: 11px;");
 	m_limitMax -> setFieldToolTip("Maximum <b>x</b> value to be calculated.");
 	m_limitMax -> setFieldValidator(m_intRegExVal);
@@ -243,6 +246,18 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 		this,
 		MainWindow::onPlot
 	);
+	connect(
+		m_function -> getInputField(),
+		QLineEdit::returnPressed,
+		m_graph,
+		Graph::build
+	);
+	connect(
+		m_function -> getInputField(),
+		QLineEdit::returnPressed,
+		this,
+		MainWindow::onPlot
+	);
 	m_buttonLayout -> addWidget(m_plotGraphButton);
 
 	// Reset function button
@@ -304,4 +319,5 @@ MainWindow::~MainWindow() {
 	delete m_centralWidget;
 
 	delete m_intRegExVal;
+	delete m_functionRegExVal;
 }

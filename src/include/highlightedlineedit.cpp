@@ -29,7 +29,7 @@ HighlightedLineEdit::HighlightedLineEdit(QWidget* parent) : QWidget(parent) {
 	m_inputField -> setMaximumHeight(50);
 	m_inputField -> installEventFilter(this);
 	m_mainLayout -> addWidget(m_inputField);
-	this -> heightViaLabel(15);
+	this -> setHeightViaLabel(15);
 
 	m_curBorderColor = Colors.borderColor;
 	// Clear pulse
@@ -181,14 +181,14 @@ QString HighlightedLineEdit::getShownText() const {
 		return ret;
 }
 
-void HighlightedLineEdit::heightViaLabel(int height) {
+void HighlightedLineEdit::setHeightViaLabel(int height) {
 	m_label -> setMaximumHeight(height);
 	this -> setMaximumHeight(m_label -> maximumHeight() + m_inputField -> maximumHeight());
 	
 	return;
 }
 
-void HighlightedLineEdit::widthViaField(int width) {
+void HighlightedLineEdit::setWidthViaField(int width) {
 	m_inputField -> setMaximumWidth(width);
 	this -> setMaximumWidth(m_inputField -> maximumWidth());
 

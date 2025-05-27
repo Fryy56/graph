@@ -434,3 +434,14 @@ private:
 
 	Stack* st = nullptr;
 };
+
+class CalcCheck final {
+public:
+	void check(QList<QString> const& postfixList, QList<bool> output) {
+		for (auto token : postfixList) {
+			
+		}
+
+		return;
+	}
+};
